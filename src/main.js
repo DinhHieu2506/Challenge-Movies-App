@@ -7,7 +7,7 @@ const searchButton = document.querySelector('.search__button');
 
 let keywordIndex = 0;
 let isLoading = false;
-let isCustomSearch = false; 
+let isCustomSearch = false;
 
 function showSkeletons(count = 4) {
     const rowDiv = document.createElement('div');
@@ -15,19 +15,19 @@ function showSkeletons(count = 4) {
 
     for (let i = 0; i < count; i++) {
         const skeletonCard = `
-        <div class="movie-list__card skeleton">
-          <div class="movie-list__poster">
-            <div class="skeleton-box skeleton-img"></div>
-          </div>
-          <div class="movie-list__title">
-            <div class="skeleton-box skeleton-text"></div>
-          </div>
-          <div class="movie-list__footer">
-            <div class="skeleton-box skeleton-icon"></div>
-            <div class="skeleton-box skeleton-icon"></div>
-          </div>
-        </div>
-      `;
+            <div class="movie-list__card skeleton">
+                <div class="movie-list__poster">
+                    <div class="skeleton-box skeleton-img"></div>
+                </div>
+                <div class="movie-list__title">
+                    <div class="skeleton-box skeleton-text"></div>
+                </div>
+                <div class="movie-list__footer">
+                    <div class="skeleton-box skeleton-icon"></div>
+                    <div class="skeleton-box skeleton-icon"></div>
+                </div>
+            </div>
+        `;
         rowDiv.insertAdjacentHTML('beforeend', skeletonCard);
     }
 
@@ -36,6 +36,15 @@ function showSkeletons(count = 4) {
 
 function removeSkeletons() {
     document.querySelectorAll('.skeleton-row').forEach((row) => row.remove());
+}
+
+async function getData(url) {
+    const response = await fetch(url);
+    if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+    const data = await response.json();
+    return data;
 }
 
 async function fetchMovies(keyword, isNewSearch = false) {
@@ -48,10 +57,9 @@ async function fetchMovies(keyword, isNewSearch = false) {
     showSkeletons();
 
     const apiUrl = `https://www.omdbapi.com/?apikey=${apiKey}&s=${encodeURIComponent(keyword)}`;
-    try {
-        const response = await fetch(apiUrl);
-        const data = await response.json();
 
+    try {
+        const data = await getData(apiUrl);
         removeSkeletons();
 
         if (data.Response === 'True') {
@@ -68,28 +76,26 @@ async function fetchMovies(keyword, isNewSearch = false) {
                 const currentList = root.lastElementChild;
 
                 const movieCard = `
-                <div class="movie-list__card">
-                    <div class="movie-list__poster" data-imdbid="${movie.imdbID}">
-                        <img src="${movie.Poster !== 'N/A' ? movie.Poster : 'https://via.placeholder.com/150'}" alt="${movie.Title}">
-                        <div class="movie-list__title">
-                            <h2>${movie.Title}</h2>
+                    <div class="movie-list__card">
+                        <div class="movie-list__poster" data-imdbid="${movie.imdbID}">
+                            <img src="${movie.Poster !== 'N/A' ? movie.Poster : 'https://via.placeholder.com/150'}" alt="${movie.Title}">
+                            <div class="movie-list__title">
+                                <h2>${movie.Title}</h2>
+                            </div>
+                        </div>
+                        <div class="movie-list__footer">
+                            <div class="movie-list__release-year">
+                                <i class="fas fa-calendar-alt" style="color: #f6c700;"></i>
+                                <span>${movie.Year}</span>
+                            </div>
+                            <div class="movie-list__rating">🤍</div>
                         </div>
                     </div>
-                    <div class="movie-list__footer">
-                        <div class="movie-list__release-year">
-                            <i class="fas fa-calendar-alt" style="color: #f6c700;"></i>
-                            <span>${movie.Year}</span>
-                        </div>
-                        <div class="movie-list__rating">🤍</div>
-                    </div>
-                </div>
                 `;
                 currentList.insertAdjacentHTML('beforeend', movieCard);
             });
-        } else {
-            if (isNewSearch) {
-                root.innerHTML = `<p class="error-message">No movies found for "${keyword}".</p>`;
-            }
+        } else if (isNewSearch) {
+            root.innerHTML = `<p class="error-message">No movies found for "${keyword}".</p>`;
         }
     } catch (error) {
         console.error('Error fetching movies:', error);
@@ -110,7 +116,6 @@ window.addEventListener('DOMContentLoaded', () => {
     isCustomSearch = false;
     loadNextKeyword();
 });
-
 
 window.addEventListener('scroll', async () => {
     const nearBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight - 100;
