@@ -85,7 +85,7 @@ async function fetchMovies(keyword, isNewSearch = false) {
                         </div>
                         <div class="movie-list__footer">
                             <div class="movie-list__release-year">
-                                <i class="fas fa-calendar-alt" style="color: #f6c700;"></i>
+                                <i class="fas fa-calendar-alt"></i>
                                 <span>${movie.Year}</span>
                             </div>
                             <div class="movie-list__rating">🤍</div>
