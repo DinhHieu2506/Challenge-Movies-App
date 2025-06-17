@@ -41,11 +41,18 @@
 
 .movie-detail {
     display: flex;
-    padding: 20px;
+    
     margin: 0 auto;
     max-width: 1280px;
     color: white;
     justify-content: space-between;
+    padding: 2rem;
+
+    &__poster {
+        img {
+            height: 600;
+        }
+    }
 
     &__info{
         padding: 0 2rem;
