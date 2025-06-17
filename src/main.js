@@ -135,14 +135,23 @@ searchButton.addEventListener('click', async () => {
 });
 
 
+let previousValue = searchInput.value.trim();
+
 searchInput.addEventListener('input', () => {
-    if (searchInput.value.trim() === '') {
+    const currentValue = searchInput.value.trim();
+    
+    if (currentValue === '' && previousValue !== '') {
         isCustomSearch = false;
         keywordIndex = 0;
         root.innerHTML = '';
-        loadNextKeyword();
+        loadNextKeyword(); 
     }
+
+    previousValue = currentValue;
 });
+
+
+
 
 
 root.addEventListener('click', (event) => {
